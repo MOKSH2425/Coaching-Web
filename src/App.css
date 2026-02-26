@@ -1,0 +1,290 @@
+/* =========================================================
+   DIGITALFORGEX - THE ULTIMATE GLASSMORPHISM THEME
+   ========================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+/* --- 1. THE BULLETPROOF BACKGROUND FIX --- */
+body, #root {
+  background-color: transparent !important;
+  color: #f8fafc !important;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+
+/* This creates a fixed, unblockable layer for your image */
+#root::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  /* EXACT SAME IMAGE FROM THE LOGIN SCREEN */
+  background-image: linear-gradient(to right, rgba(10, 15, 25, 0.8), rgba(0, 0, 0, 0.95)), 
+                    url('https://images.unsplash.com/photo-1614729939124-032f0b56c9ce?q=80&w=2000&auto=format&fit=crop') !important;
+  background-size: cover !important;
+  background-position: center !important;
+  z-index: -1; /* Forces the image behind your glass cards */
+}
+
+/* Strip away the default Bootstrap dark backgrounds so the image shows */
+.bg-dark {
+  background-color: transparent !important;
+}
+
+/* FIXING THE TERRIBLE DARK TEXT FROM YOUR SCREENSHOT */
+.text-muted {
+  color: #94a3b8 !important; /* Changes muddy grey to a crisp, bright silver */
+}
+
+/* --- 2. THE FROSTED GLASS CARDS & SIDEBAR --- */
+.sidebar, .card, .modal-content {
+  background: rgba(17, 24, 39, 0.6) !important; /* Dark blue/grey glass */
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important; /* For Safari */
+  border: 1px solid rgba(255, 255, 255, 0.08) !important; /* Thin, elegant white rim */
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5) !important; /* Deep shadow to separate cards from background */
+  border-radius: 12px;
+}
+
+/* Sidebar needs to fill the height perfectly */
+.sidebar {
+  border-radius: 0;
+  border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+/* --- 3. SLEEK, TRANSPARENT TABLES --- */
+.table {
+  color: #e2e8f0 !important;
+  --bs-table-bg: transparent; 
+  margin-bottom: 0;
+}
+.table-dark th, .table thead th {
+  background-color: rgba(0, 0, 0, 0.4) !important; /* Slightly darker glass for headers */
+  color: #cbd5e1 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+}
+.table tbody td {
+  background-color: transparent !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+  vertical-align: middle;
+}
+.table-hover tbody tr:hover td {
+  background-color: rgba(255, 255, 255, 0.08) !important; /* Highlight row on hover */
+}
+
+/* --- 4. CRISP FORM INPUTS (Search Bars & Dropdowns) --- */
+.input-group-text, .form-control, .form-select {
+  background-color: rgba(0, 0, 0, 0.4) !important;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  color: #ffffff !important;
+}
+.form-control:focus, .form-select:focus {
+  background-color: rgba(15, 23, 42, 0.8) !important;
+  border-color: #3b82f6 !important; /* Electric Blue Accent */
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3) !important;
+  color: #ffffff !important;
+}
+.form-control::placeholder {
+  color: #64748b !important;
+}
+
+/* --- 5. BUTTONS & SIDEBAR LINKS --- */
+.btn-primary {
+  background-color: #3b82f6 !important;
+  border-color: #3b82f6 !important;
+  color: #ffffff !important;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+  transition: all 0.3s ease;
+}
+.btn-primary:hover {
+  background-color: #2563eb !important;
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.6);
+  transform: translateY(-2px);
+}
+.sidebar-link {
+  text-decoration: none;
+  color: #cbd5e1;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.3s ease;
+  border-right: 3px solid transparent;
+}
+.sidebar-link:hover, .sidebar-link.active {
+  background-color: rgba(59, 130, 246, 0.15) !important;
+  color: #60a5fa !important; /* Bright blue for active link */
+  border-right: 3px solid #3b82f6;
+}
+
+/* --- 6. MOBILE RESPONSIVE HAMBURGER MENU --- */
+.mobile-header {
+  background: rgba(17, 24, 39, 0.8) !important;
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: -300px; 
+    width: 280px;
+    z-index: 1050; 
+    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .sidebar.open {
+    left: 0;
+  }
+  .sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 1040;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+  }
+  .sidebar-overlay.show {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+/* --- 7. SLEEK DARK SCROLLBAR --- */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3); 
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2); 
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.4); 
+}
+
+/* --- THE ULTIMATE TEXT CONTRAST FIX --- */
+
+/* 1. Force all table data to be bright white */
+.table, .table td, .table tbody td {
+  color: #f8fafc !important; 
+}
+
+/* 2. Force table headers (ID, NAME, CLASS) to be a crisp, readable silver */
+.table-dark th, .table thead th {
+  color: #cbd5e1 !important;
+  font-weight: 600 !important;
+}
+
+/* 3. Fix the muddy labels on the Dashboard cards */
+.text-muted {
+  color: #94a3b8 !important; 
+}
+
+/* 4. Ensure general text in cards doesn't default to black */
+.card, .modal-content, .sidebar {
+  color: #f8fafc !important;
+}
+
+
+/* =========================================================
+   LIGHT MODE OVERRIDES (DAY THEME)
+   ========================================================= */
+
+[data-theme="light"] body {
+  /* Clean White/Grey Background instead of Space Image */
+  background-image: none !important; 
+  background-color: #f3f4f6 !important;
+  color: #1f2937 !important;
+}
+
+/* Override the fixed background image hack */
+[data-theme="light"] #root::before {
+  display: none !important;
+}
+
+/* Light Mode Cards & Sidebar */
+[data-theme="light"] .sidebar, 
+[data-theme="light"] .card, 
+[data-theme="light"] .modal-content {
+  background: #ffffff !important; /* Pure white cards */
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+  color: #1f2937 !important;
+  backdrop-filter: none !important;
+}
+
+/* Light Mode Text Fixes */
+[data-theme="light"] h1, 
+[data-theme="light"] h2, 
+[data-theme="light"] h3, 
+[data-theme="light"] h4, 
+[data-theme="light"] h5, 
+[data-theme="light"] h6,
+[data-theme="light"] strong,
+[data-theme="light"] b {
+  color: #111827 !important; /* Dark text */
+}
+
+[data-theme="light"] .text-white, 
+[data-theme="light"] .text-white-50 {
+  color: #374151 !important; /* Turn white text to dark grey */
+}
+
+[data-theme="light"] .text-muted {
+  color: #6b7280 !important;
+}
+
+/* Light Mode Tables */
+[data-theme="light"] .table {
+  color: #374151 !important;
+}
+[data-theme="light"] .table-dark th, 
+[data-theme="light"] .table thead th {
+  background-color: #f9fafb !important;
+  color: #374151 !important;
+  border-bottom: 2px solid #e5e7eb !important;
+}
+[data-theme="light"] .table tbody td {
+  border-bottom: 1px solid #e5e7eb !important;
+}
+[data-theme="light"] .table-hover tbody tr:hover td {
+  background-color: #f3f4f6 !important;
+}
+
+/* Light Mode Sidebar Links */
+[data-theme="light"] .sidebar-link {
+  color: #4b5563 !important;
+}
+[data-theme="light"] .sidebar-link:hover, 
+[data-theme="light"] .sidebar-link.active {
+  background-color: #eff6ff !important;
+  color: #3b82f6 !important;
+}
+
+/* Light Mode Inputs */
+[data-theme="light"] .form-control, 
+[data-theme="light"] .form-select,
+[data-theme="light"] .input-group-text {
+  background-color: #ffffff !important;
+  border: 1px solid #d1d5db !important;
+  color: #111827 !important;
+}
