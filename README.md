@@ -1,16 +1,28 @@
-# React + Vite
+# 🎓 DigitalForgex - EdTech SaaS Platform
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A full-stack, real-time Coaching Institute Management System built with React and Firebase. This platform digitizes the entire workflow of an educational institute, providing secure, isolated portals for both Administrators and Students.
 
-Currently, two official plugins are available:
+## 🚀 Key Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+* **Role-Based Access Control:** Secure login system routing users to either the Admin Master Portal or the Student Dashboard.
+* **Real-Time Analytics Dashboard:** Dynamic data visualization tracking total revenue, pending fees, active leads, and course enrollment percentages.
+* **Live Cloud Database:** Fully integrated with Google Firebase (Firestore) for instant data synchronization across all devices.
+* **Financial Ledger:** Generate fee invoices, track payments, and update statuses (Pending/Paid) in real-time.
+* **Academic Core:** Cloud-synced timetables, attendance tracking, study material distribution, and exam result publishing.
+* **Inquiry CRM:** Manage prospective student leads, track contact status, and convert leads to enrollments.
 
-## React Compiler
+## 🛠️ Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+* **Frontend:** React (Vite), React-Bootstrap, Custom CSS
+* **Backend/Database:** Google Firebase (Firestore)
+* **UI/UX:** Lucide-React (Icons), React-Hot-Toast (Notifications)
 
-## Expanding the ESLint configuration
+## ⚙️ Local Setup Instructions
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+1. Clone the repository: `git clone [your-repo-link]`
+2. Install dependencies: `npm install`
+3. Configure Firebase: Add your Firebase project keys to `src/firebase.js`
+4. Start the development server: `npm run dev`
+
+---
+*Built with ❤️ by [Your Name/Handle]*
