@@ -4,6 +4,8 @@ import { Form, Button, Nav, Tab, Container, Row, Col } from 'react-bootstrap';
 import { Lock, Mail, ChevronRight, Phone, Shield, User, Hexagon } from 'lucide-react';
 import PageTransition from './PageTransition';
 import toast from 'react-hot-toast';
+import { auth } from './firebase';
+import { signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
 
 // --- FIREBASE IMPORTS ---
 import { db } from './firebase';
@@ -19,27 +21,45 @@ const Login = () => {
   const [adminPass, setAdminPass] = useState('');
   const [studentPhone, setStudentPhone] = useState('');
 
-// --- ADMIN LOGIN (SECURED) ---
-  const handleAdminLogin = (e) => {
+  // --- ADMIN LOGIN (SECURE CLOUD AUTH) ---
+  const handleAdminLogin = async (e) => {
     e.preventDefault();
-    
-    // 🔒 Set your Master Admin credentials here
-    const MASTER_EMAIL = "admin@test.com";
-    const MASTER_PASS = "admin123"; 
 
-    if (adminEmail === MASTER_EMAIL && adminPass === MASTER_PASS) {
+    try {
+      // This asks Google to verify the credentials
+      await signInWithEmailAndPassword(auth, adminEmail, adminPass);
+
+      // If it succeeds, we let them in!
       localStorage.setItem('user_role', 'admin');
-      toast.success("Access Granted. Welcome back, Admin!");
+      toast.success("Secure Cloud Login Successful!");
       navigate('/dashboard');
-    } else {
+
+    } catch (error) {
+      console.error("Auth Error:", error.message);
       toast.error("Invalid credentials. Access Denied.");
+    }
+  };
+
+  // --- FORGOT PASSWORD FLOW ---
+  const handleForgotPassword = async () => {
+    if (!adminEmail) {
+      toast.error("Please type your email into the Email box first!");
+      return;
+    }
+
+    try {
+      await sendPasswordResetEmail(auth, adminEmail);
+      toast.success("Password reset link sent! Check your inbox.");
+    } catch (error) {
+      toast.error("Could not send reset email. Make sure the email is correct.");
+      console.error(error);
     }
   };
 
   // --- STUDENT LOGIN (NOW LIVE VIA FIREBASE) ---
   const handleStudentLogin = async (e) => {
     e.preventDefault();
-    
+
     if (!studentPhone) {
       toast.error("Please enter your phone number.");
       return;
@@ -82,19 +102,19 @@ const Login = () => {
 
   // --- STYLES ---
   const glassPanelStyle = {
-    backgroundColor: 'rgba(15, 23, 42, 0.70)', 
-    backdropFilter: 'blur(25px)',              
-    borderLeft: '1px solid rgba(255, 255, 255, 0.08)', 
+    backgroundColor: 'rgba(15, 23, 42, 0.70)',
+    backdropFilter: 'blur(25px)',
+    borderLeft: '1px solid rgba(255, 255, 255, 0.08)',
     height: '100%',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     position: 'relative',
-    boxShadow: '-10px 0 30px rgba(0,0,0,0.5)' 
+    boxShadow: '-10px 0 30px rgba(0,0,0,0.5)'
   };
 
   const inputStyle = {
-    backgroundColor: 'rgba(0, 0, 0, 0.3)', 
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
     border: '1px solid rgba(255, 255, 255, 0.1)',
     borderRadius: '12px',
     padding: '16px 20px',
@@ -107,7 +127,7 @@ const Login = () => {
   return (
     <PageTransition>
       <div className="vh-100 w-100 overflow-hidden position-relative">
-        
+
         {/* BACKGROUND */}
         <div style={{
           position: 'absolute', inset: 0,
@@ -118,14 +138,14 @@ const Login = () => {
 
         <Container fluid className="h-100 p-0">
           <Row className="h-100 g-0">
-            
+
             {/* LEFT SIDE TEXT */}
             <Col lg={7} md={6} className="d-none d-md-flex flex-column justify-content-end p-5 text-white">
               <div style={{ marginBottom: '5rem', paddingLeft: '2rem' }}>
-                <div className="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-3" 
-                     style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.1)', backdropFilter: 'blur(4px)' }}>
-                   <div className="bg-success rounded-circle shadow" style={{ width: '8px', height: '8px' }}></div>
-                   <span className="text-white small fw-bold" style={{ fontSize: '0.75rem', letterSpacing: '1px' }}>SYSTEM OPERATIONAL</span>
+                <div className="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-3"
+                  style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.1)', backdropFilter: 'blur(4px)' }}>
+                  <div className="bg-success rounded-circle shadow" style={{ width: '8px', height: '8px' }}></div>
+                  <span className="text-white small fw-bold" style={{ fontSize: '0.75rem', letterSpacing: '1px' }}>SYSTEM OPERATIONAL</span>
                 </div>
                 <h1 className="display-3 fw-bold mb-2" style={{ textShadow: '0 4px 20px rgba(0,0,0,0.5)' }}>DIGITALFORGEX</h1>
                 <p className="lead text-white-50 fs-5" style={{ maxWidth: '500px' }}>
@@ -137,10 +157,10 @@ const Login = () => {
             {/* RIGHT SIDE GLASS PANE */}
             <Col lg={5} md={6} style={glassPanelStyle}>
               <div style={{ width: '100%', maxWidth: '420px', padding: '40px' }}>
-                
+
                 <div className="text-center mb-5">
-                  <div className="d-inline-flex align-items-center justify-content-center bg-primary bg-opacity-20 rounded-circle mb-4" 
-                       style={{ width: '80px', height: '80px', border: '1px solid rgba(59, 130, 246, 0.3)', boxShadow: '0 0 20px rgba(59, 130, 246, 0.2)' }}>
+                  <div className="d-inline-flex align-items-center justify-content-center bg-primary bg-opacity-20 rounded-circle mb-4"
+                    style={{ width: '80px', height: '80px', border: '1px solid rgba(59, 130, 246, 0.3)', boxShadow: '0 0 20px rgba(59, 130, 246, 0.2)' }}>
                     <Hexagon size={36} className="text-primary" />
                   </div>
                   <h2 className="fw-bold text-white mb-1">Welcome Back</h2>
@@ -148,18 +168,18 @@ const Login = () => {
                 </div>
 
                 <Tab.Container activeKey={activeTab} onSelect={(k) => setActiveTab(k)}>
-                  
+
                   {/* TOGGLE */}
                   <div className="mb-5 p-1 rounded-pill d-flex bg-black bg-opacity-40 border border-white border-opacity-10">
-                    <Button 
-                      variant="link" 
+                    <Button
+                      variant="link"
                       className={`w-50 rounded-pill text-decoration-none fw-bold py-2 transition-all ${activeTab === 'admin' ? 'bg-primary text-white shadow' : 'text-white-50'}`}
                       onClick={() => setActiveTab('admin')}
                     >
                       <Shield size={16} className="me-2 mb-1" /> Admin
                     </Button>
-                    <Button 
-                      variant="link" 
+                    <Button
+                      variant="link"
                       className={`w-50 rounded-pill text-decoration-none fw-bold py-2 transition-all ${activeTab === 'student' ? 'bg-success text-white shadow' : 'text-white-50'}`}
                       onClick={() => setActiveTab('student')}
                     >
@@ -186,6 +206,11 @@ const Login = () => {
                         <Button type="submit" variant="primary" className="w-100 py-3 fw-bold rounded-pill shadow-lg mt-2 hover-scale">
                           Login to Dashboard <ChevronRight size={18} className="ms-2" />
                         </Button>
+                        <div className="text-center mt-3">
+                          <Button variant="link" className="text-white-50 small text-decoration-none" onClick={handleForgotPassword}>
+                            Forgot Password?
+                          </Button>
+                        </div>
                       </Form>
                     </Tab.Pane>
 
@@ -208,7 +233,7 @@ const Login = () => {
                     </Tab.Pane>
                   </Tab.Content>
                 </Tab.Container>
-                
+
                 <div className="text-center mt-5">
                   <small className="text-white-50 opacity-50">© 2026 DIGITALFORGEX System</small>
                 </div>

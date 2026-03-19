@@ -1,8 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Row, Col, Card, Button, Modal, Form, Table, Badge } from 'react-bootstrap';
-import { CreditCard, Plus, Trash2, Search, CheckCircle, Clock } from 'lucide-react';
+// Added 'Download' to the icons
+import { CreditCard, Plus, Trash2, Search, CheckCircle, Clock, Download } from 'lucide-react';
 import toast from 'react-hot-toast';
 import PageTransition from './PageTransition';
+
+// --- PDF IMPORTS ---
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable'; // <-- Changed this line!
 
 // --- FIREBASE IMPORTS ---
 import { db } from './firebase';
@@ -11,7 +16,7 @@ import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from 'firebase
 const Fees = () => {
   const [showModal, setShowModal] = useState(false);
   const [fees, setFees] = useState([]);
-  const [studentsList, setStudentsList] = useState([]); // Real students from Cloud
+  const [studentsList, setStudentsList] = useState([]); 
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -22,27 +27,16 @@ const Fees = () => {
   const feesCollectionRef = collection(db, "fees");
   const studentsCollectionRef = collection(db, "students");
 
-  // --- 1. FETCH FEES & STUDENTS FROM FIREBASE ---
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch Students for the Dropdown
         const studentData = await getDocs(studentsCollectionRef);
-        const loadedStudents = studentData.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }));
-        // Sort students alphabetically
+        const loadedStudents = studentData.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         loadedStudents.sort((a, b) => a.name.localeCompare(b.name));
         setStudentsList(loadedStudents);
 
-        // Fetch Fees
         const feeData = await getDocs(feesCollectionRef);
-        const loadedFees = feeData.docs.map(doc => ({
-          ...doc.data(),
-          id: doc.id
-        }));
-        // Sort newest first
+        const loadedFees = feeData.docs.map(doc => ({ ...doc.data(), id: doc.id }));
         loadedFees.sort((a, b) => b.timestamp - a.timestamp);
         setFees(loadedFees);
 
@@ -56,7 +50,6 @@ const Fees = () => {
     fetchData();
   }, []);
 
-  // Handle Dropdown Change to auto-fill course and name
   const handleStudentSelect = (e) => {
     const selectedId = e.target.value;
     const selectedStudent = studentsList.find(s => s.id === selectedId);
@@ -73,7 +66,6 @@ const Fees = () => {
     }
   };
 
-  // --- 2. SAVE FEE TO FIREBASE ---
   const handleSave = async () => {
     if (!newFee.studentId || !newFee.amount || !newFee.date) {
       toast.error("Student, Amount, and Due Date are required!");
@@ -102,14 +94,11 @@ const Fees = () => {
     }
   };
 
-  // --- 3. UPDATE STATUS IN FIREBASE ---
   const handleStatusToggle = async (id, currentStatus) => {
     const newStatus = currentStatus === 'Pending' ? 'Paid' : 'Pending';
     try {
       const feeDoc = doc(db, "fees", id);
       await updateDoc(feeDoc, { status: newStatus });
-      
-      // Update UI locally
       setFees(fees.map(f => f.id === id ? { ...f, status: newStatus } : f));
       toast.success(`Marked as ${newStatus}`);
     } catch (error) {
@@ -118,12 +107,10 @@ const Fees = () => {
     }
   };
 
-  // --- 4. DELETE FROM FIREBASE ---
   const handleDelete = async (id) => {
     if(window.confirm("Permanently delete this fee record?")) {
       try {
-        const feeDoc = doc(db, "fees", id);
-        await deleteDoc(feeDoc);
+        await deleteDoc(doc(db, "fees", id));
         setFees(fees.filter(f => f.id !== id));
         toast.success("Record deleted.");
       } catch (error) {
@@ -131,6 +118,46 @@ const Fees = () => {
         console.error(error);
       }
     }
+  };
+
+  // --- GENERATE PDF INVOICE FUNCTION ---
+  const generateInvoice = (fee) => {
+    const doc = new jsPDF();
+    
+    // Header
+    doc.setFontSize(22);
+    doc.setTextColor(30, 58, 138); // Primary Blue
+    doc.text("DIGITALFORGEX INSTITUTE", 14, 20);
+    
+    doc.setFontSize(12);
+    doc.setTextColor(100);
+    doc.text("Official Fee Invoice", 14, 30);
+    doc.text(`Date Generated: ${new Date().toLocaleDateString()}`, 14, 36);
+    
+    // Invoice Table (Updated syntax for Vite)
+    autoTable(doc, {
+      startY: 45,
+      head: [['Description', 'Details']],
+      body: [
+        ['Student Name', fee.studentName],
+        ['Course Enrolled', fee.course],
+        ['Invoice Amount', `Rs. ${fee.amount}`],
+        ['Due Date', fee.date || 'N/A'],
+        ['Payment Status', fee.status]
+      ],
+      theme: 'grid',
+      headStyles: { fillColor: [30, 58, 138] },
+      styles: { fontSize: 11, cellPadding: 5 }
+    });
+
+    // Footer
+    const finalY = doc.lastAutoTable.finalY || 45;
+    doc.setFontSize(10);
+    doc.text("Thank you for choosing DigitalForgex.", 14, finalY + 15);
+
+    // Download the file
+    doc.save(`Invoice_${fee.studentName.replace(/\s+/g, '_')}.pdf`);
+    toast.success("PDF Invoice Downloaded!");
   };
 
   const filteredFees = fees.filter(f => 
@@ -204,7 +231,11 @@ const Fees = () => {
                       </Badge>
                     </td>
                     <td className="py-3 text-end pe-4">
-                      <Button variant="link" className="text-danger p-2 hover-scale" onClick={() => handleDelete(fee.id)}>
+                      {/* ADDED THE DOWNLOAD BUTTON HERE */}
+                      <Button variant="link" className="text-info p-2 hover-scale me-2" onClick={() => generateInvoice(fee)} title="Download Invoice">
+                        <Download size={18} />
+                      </Button>
+                      <Button variant="link" className="text-danger p-2 hover-scale" onClick={() => handleDelete(fee.id)} title="Delete Record">
                         <Trash2 size={18} />
                       </Button>
                     </td>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import ProtectedRoute from './ProtectedRoute'; // Security Wrapper!
 import { Container } from 'react-bootstrap';
 import { Menu } from 'lucide-react';
 import { Toaster } from 'react-hot-toast';
@@ -17,13 +18,13 @@ import Exams from './Exams';
 import Staff from './Staff';
 import Inquiries from './Inquiries';
 import Notices from './Notices';
-import Resources from './Resources'; // <--- NEW IMPORT
+import Resources from './Resources'; 
 import StudentDashboard from './StudentDashboard';
 
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-// ADMIN LAYOUT
+// ADMIN LAYOUT (Kept exactly as you built it!)
 const AdminLayout = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
@@ -45,6 +46,7 @@ const AdminLayout = ({ children }) => {
 };
 
 function App() {
+  // Theme Loader (Kept exactly as you built it!)
   useEffect(() => {
     const savedTheme = localStorage.getItem('digitalforgex_theme') || 'dark';
     document.body.setAttribute('data-theme', savedTheme);
@@ -54,24 +56,36 @@ function App() {
     <Router>
       <Toaster position="top-right" toastOptions={{ style: { background: '#333', color: '#fff' } }} />
       <Routes>
-        <Route path="/" element={<Navigate to="/login" />} />
+        {/* PUBLIC ROUTES */}
+        <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<Login />} />
         
-        {/* STUDENT ROUTE */}
-        <Route path="/student/dashboard" element={<StudentDashboard />} />
+        {/* ======================================================== */}
+        {/* STUDENT ROUTE (Locked for Students Only)                 */}
+        {/* ======================================================== */}
+        <Route path="/student/dashboard" element={
+          <ProtectedRoute allowedRole="student">
+            <StudentDashboard />
+          </ProtectedRoute>
+        } />
 
-        {/* ADMIN ROUTES */}
-        <Route path="/dashboard" element={<AdminLayout><Dashboard /></AdminLayout>} />
-        <Route path="/students" element={<AdminLayout><Students /></AdminLayout>} />
-        <Route path="/fees" element={<AdminLayout><Fees /></AdminLayout>} />
-        <Route path="/attendance" element={<AdminLayout><Attendance /></AdminLayout>} />
-        <Route path="/notices" element={<AdminLayout><Notices /></AdminLayout>} />
-        <Route path="/resources" element={<AdminLayout><Resources /></AdminLayout>} /> 
-        <Route path="/timetable" element={<AdminLayout><Schedule /></AdminLayout>} />
-        <Route path="/exams" element={<AdminLayout><Exams /></AdminLayout>} />
-        <Route path="/staff" element={<AdminLayout><Staff /></AdminLayout>} />
-        <Route path="/inquiries" element={<AdminLayout><Inquiries /></AdminLayout>} />
-        <Route path="/settings" element={<AdminLayout><Settings /></AdminLayout>} />
+        {/* ======================================================== */}
+        {/* ADMIN ROUTES (Locked for Admins Only + Includes Sidebar) */}
+        {/* ======================================================== */}
+        <Route path="/dashboard" element={<ProtectedRoute allowedRole="admin"><AdminLayout><Dashboard /></AdminLayout></ProtectedRoute>} />
+        <Route path="/students" element={<ProtectedRoute allowedRole="admin"><AdminLayout><Students /></AdminLayout></ProtectedRoute>} />
+        <Route path="/fees" element={<ProtectedRoute allowedRole="admin"><AdminLayout><Fees /></AdminLayout></ProtectedRoute>} />
+        <Route path="/attendance" element={<ProtectedRoute allowedRole="admin"><AdminLayout><Attendance /></AdminLayout></ProtectedRoute>} />
+        <Route path="/notices" element={<ProtectedRoute allowedRole="admin"><AdminLayout><Notices /></AdminLayout></ProtectedRoute>} />
+        <Route path="/resources" element={<ProtectedRoute allowedRole="admin"><AdminLayout><Resources /></AdminLayout></ProtectedRoute>} /> 
+        <Route path="/timetable" element={<ProtectedRoute allowedRole="admin"><AdminLayout><Schedule /></AdminLayout></ProtectedRoute>} />
+        <Route path="/exams" element={<ProtectedRoute allowedRole="admin"><AdminLayout><Exams /></AdminLayout></ProtectedRoute>} />
+        <Route path="/staff" element={<ProtectedRoute allowedRole="admin"><AdminLayout><Staff /></AdminLayout></ProtectedRoute>} />
+        <Route path="/inquiries" element={<ProtectedRoute allowedRole="admin"><AdminLayout><Inquiries /></AdminLayout></ProtectedRoute>} />
+        <Route path="/settings" element={<ProtectedRoute allowedRole="admin"><AdminLayout><Settings /></AdminLayout></ProtectedRoute>} />
+
+        {/* CATCH-ALL: If they type a broken URL, kick them to login */}
+        <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </Router>
   );

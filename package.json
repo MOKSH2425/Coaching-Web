@@ -13,6 +13,8 @@
     "bootstrap": "^5.3.8",
     "firebase": "^12.9.0",
     "framer-motion": "^12.34.2",
+    "jspdf": "^4.2.1",
+    "jspdf-autotable": "^5.0.7",
     "lucide-react": "^0.574.0",
     "react": "^19.2.0",
     "react-bootstrap": "^2.10.10",
