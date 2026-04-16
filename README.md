@@ -25,4 +25,4 @@ A full-stack, real-time Coaching Institute Management System built with React an
 4. Start the development server: `npm run dev`
 
 ---
-*Built with ❤️ by [Your Name/Handle]*
+*Built with ❤️ by MOKSH
