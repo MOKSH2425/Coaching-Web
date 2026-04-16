@@ -5,7 +5,7 @@ import { Lock, Mail, ChevronRight, Phone, Shield, User, Hexagon } from 'lucide-r
 import PageTransition from './PageTransition';
 import toast from 'react-hot-toast';
 import { auth } from './firebase';
-import { signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
+import { signInWithEmailAndPassword, sendPasswordResetEmail, signInAnonymously } from 'firebase/auth';
 
 // --- FIREBASE IMPORTS ---
 import { db } from './firebase';
@@ -68,9 +68,11 @@ const Login = () => {
     setIsLoggingIn(true);
 
     try {
+      const normalizedPhone = studentPhone.replace(/\D/g, '');
+
       // 1. Ask Firebase: "Find a student where 'phone' equals what the user typed"
       const studentsRef = collection(db, "students");
-      const q = query(studentsRef, where("phone", "==", studentPhone));
+      const q = query(studentsRef, where("phone", "==", normalizedPhone));
       const querySnapshot = await getDocs(q);
 
       // 2. Check if we got a match
@@ -79,6 +81,12 @@ const Login = () => {
         const studentDoc = querySnapshot.docs[0];
         const studentData = studentDoc.data();
         const studentId = studentDoc.id;
+
+        try {
+          await signInAnonymously(auth);
+        } catch (authError) {
+          console.warn("Anonymous sign-in failed:", authError);
+        }
 
         // Save session data so they stay logged in
         localStorage.setItem('user_role', 'student');

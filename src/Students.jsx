@@ -31,7 +31,11 @@ const Students = () => {
         }));
         
         // Sort alphabetically by name
-        loadedStudents.sort((a, b) => a.name.localeCompare(b.name));
+        loadedStudents.sort((a, b) => {
+          const nameA = (a.name || '').toString();
+          const nameB = (b.name || '').toString();
+          return nameA.localeCompare(nameB);
+        });
         setStudents(loadedStudents);
         setLoading(false);
       } catch (error) {
